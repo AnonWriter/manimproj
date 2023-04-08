@@ -1,0 +1,4 @@
+# This file is used internally by FFMPEG.
+file 'file:F:/programs/manim/Projects/manimproj/media/videos/trigm1/480p15/partial_movie_files/InverseTrigs/4266129954_249766558_223132457.mp4'
+file 'file:F:/programs/manim/Projects/manimproj/media/videos/trigm1/480p15/partial_movie_files/InverseTrigs/1442284246_1799980407_1586851471.mp4'
+file 'file:F:/programs/manim/Projects/manimproj/media/videos/trigm1/480p15/partial_movie_files/InverseTrigs/1442284246_2651430306_1963767761.mp4'
