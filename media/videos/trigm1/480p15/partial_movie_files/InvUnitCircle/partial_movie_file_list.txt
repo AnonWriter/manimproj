@@ -1,7 +1,0 @@
-# This file is used internally by FFMPEG.
-file 'file:F:/programs/manim/Projects/manimproj/media/videos/trigm1/480p15/partial_movie_files/InvUnitCircle/4266129954_1673416475_223132457.mp4'
-file 'file:F:/programs/manim/Projects/manimproj/media/videos/trigm1/480p15/partial_movie_files/InvUnitCircle/1442284246_2908137239_2049233279.mp4'
-file 'file:F:/programs/manim/Projects/manimproj/media/videos/trigm1/480p15/partial_movie_files/InvUnitCircle/1442284246_3897253076_2960933004.mp4'
-file 'file:F:/programs/manim/Projects/manimproj/media/videos/trigm1/480p15/partial_movie_files/InvUnitCircle/1442284246_2167176400_2618094279.mp4'
-file 'file:F:/programs/manim/Projects/manimproj/media/videos/trigm1/480p15/partial_movie_files/InvUnitCircle/1442284246_3923325245_2312451454.mp4'
-file 'file:F:/programs/manim/Projects/manimproj/media/videos/trigm1/480p15/partial_movie_files/InvUnitCircle/1442284246_3315967912_2848103288.mp4'
