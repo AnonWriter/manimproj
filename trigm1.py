@@ -1,111 +1,7 @@
 from manim import *
 from manimlib import *
-from numpy import sin, arcsin, cos, arccos, tan, arctan
-
-class Formulas(Scene):
-    def construct(self):
-
-        tex1 = Tex("Si")
-
-        sin_tex = Tex("$f(x) = \sin x$")
-        
-        sin_domain = Tex(
-            "$D_f = \{ \mathbb{R} \}$, y \
-             \\noindent $I_f = \{ x | -1 \le x \le 1 \}$"
-        )
-        sin_domain.next_to(tex1, DOWN)
-        sin_domain.next_to(sin_tex, DOWN)
-
-        self.play(Write(tex1), tex1.animate.shift(UP*0.5))
-
-        self.play(
-            Write(sin_tex),
-            run_time=2.5
-        )
-        self.play(
-            Write(sin_domain),
-            run_time=2.5
-        )
-        self.wait()
-
-        g_tex1 = VGroup(tex1, sin_tex, sin_domain)
-        self.play(g_tex1.animate.shift(UP*2.7))
-
-        tex2 = Tex("Entonces")
-
-        self.play(Write(tex2), tex2.animate.shift(UP*0.5))
-
-        sinm1_tex = Tex("$f^{-1}(x) = \sin y$")
-        sinm1_domain = Tex("$D_{f^{-1}} = \{ x | -1 \le x \le 1\}$, pero")
-        sinm1_idomain = Tex("$I_{f^{-1}} = \{ x | - \\frac{\pi}{2} \le x \le \\frac{\pi}{2} \}$")
-        sinm1_tex.next_to(tex2, DOWN)
-        sinm1_domain.next_to(sinm1_tex, DOWN)
-        sinm1_idomain.next_to(sinm1_domain, DOWN)
-
-        self.play(
-            Write(sinm1_tex),
-            run_time=2.5
-        )
-        self.play(
-            Write(sinm1_domain),
-            run_time=2.5
-        )
-        self.play(Write(sinm1_idomain))
-        self.wait()
-
-        self.clear()
-        self.wait()
-
-        
-
-class InverseTrigs(Scene):
-    def construct(self):
-        ax = Axes(
-            x_range = [-4, 4, 1],
-            y_range = [-4, 4, PI/2],
-            tips = False,
-            x_length = 7,
-            y_length = 7,
-        )
-
-        ax_asinf = Axes(
-            x_range = [-4, 4, 1],
-            y_range = [-4, 4, PI/2],
-            tips = False,
-            x_length = 7,
-            y_length = 7,
-        )
-
-        self.play(Write(ax), Write(ax_asinf), rate_func=smooth)
-
-        # grafica del seno
-        sin_graph = ax.plot(lambda t: sin(t), x_range=[-PI, PI], color=BLUE_C)
-
-        # grafica de seno para ajustarla al arcoseno
-        inv_sin = ax.plot(lambda t: sin(t), x_range=[-PI/2, PI/2], color=YELLOW)
-        inv_sin.rotate(PI, axis=UP)
-        inv_sin.rotate(-PI/2)
-
-        # grafica de seno para ajustarla al arcocoseno
-        inv_cos = ax.plot(lambda t: PI/2 + sin(t), x_range=[-PI/2, PI/2], color=RED)
-        inv_cos.rotate(-PI/2)
-
-        # self.play(Create(sin_graph),run_time=4)
-        self.play(Create(inv_sin))
-        self.wait()
-
-        '''
-        self.play(
-            ax.animate.shift(LEFT*3),
-            inv_sin.animate.shift(LEFT*3),
-            ax_asinf.animate.shift(RIGHT*3),
-            a_asin.animate.shift(RIGHT*3)
-        )
-        self.wait()
-        '''
-
-        self.play(Create(inv_cos))
-        self.wait()
+from numpy import sin, arcsin, cos, arccos, arctan
+from math import acos, asin
 
 class InvUnitCircle(Scene):
     def construct(self):
@@ -361,10 +257,379 @@ class InvUnitCircle(Scene):
         '''
         Funciones trigonometricas inversas
         '''
+        # introduccion con el seno
 
+        xvalue = ValueTracker(-1)
 
-        arcsin_value = lambda x : arcsin(x)
+        arcsin_value = always_redraw(
+            lambda : DecimalNumber(include_sign = True, font_size = 24)
+            .set_value(arcsin(xvalue.get_value()))
+            .to_edge(UR)
+        )
+        arcsin_label = MathTex("\\sin^{-1} x = ", font_size = 24).next_to(arcsin_value, LEFT)
+
+        inv_trigs_axes = Axes(
+            x_range = [-6, 6, 1],
+            x_length = 12,
+            y_range = [-PI, PI, PI/2],
+            y_length = 6,
+            tips = False
+        )
+
+        inv_trigs_plane = NumberPlane(
+            x_range = [-6, 6, 1],
+            x_length = 12,
+            y_range = [-PI, PI, PI/2],
+            y_length = 6,
+            tips = False
+        ).set_opacity(0.3)
+
+        inv_trigs_label_x = NumberLine(
+            x_range = [-6, 6, 1],
+            length = 12,
+            include_tip = False,
+            include_numbers = True,
+            font_size = 18,
+            numbers_to_exclude = [0]
+        )
+
+        inv_trigs_label_y = NumberLine(
+            x_range = [-PI, PI, PI/2],
+            length = 6,
+            include_tip = False,
+            include_numbers = False,
+            font_size = 18
+        ).set_opacity(0).shift(UP*0.2 + RIGHT*0.3)
+
+        inv_trigs_label_y.rotate(PI/2)
+
+        inv_trigs_label_y.add_labels({
+            -PI     : MathTex("-\pi"),
+            -PI/2   : MathTex("-\\frac{\pi}{2}"),
+             PI/2   : MathTex("\\frac{\pi}{2}"),
+             PI     : MathTex("\pi"),
+        })
+
+        self.play(
+            Create(inv_trigs_axes),
+            Create(inv_trigs_plane),
+            Write(inv_trigs_label_x),
+            Write(inv_trigs_label_y),
+            buff = 0.6,
+            run_time = 1.5
+        )
+
+        sin_graph = inv_trigs_axes.plot(lambda x : sin(x), [-6, 6], color = BLUE)
         
-        
+        self.play(Create(sin_graph))
+
+        inv_sin_graph = inv_trigs_axes.plot(
+            lambda x : (PI/3) * sin(PI/3 * x),
+            [-PI/2 + 0.047, PI/2 - 0.047]
+        ).set_color(color = [TEAL_B, GREEN_A])
+
+        inv_sin_graph.rotate(PI, axis = UP)
+        inv_sin_graph.rotate(-PI/2)
+
+        identity_func = inv_trigs_axes.plot(
+            lambda x : x,
+            [-1, 1],
+            color = PURPLE_B
+        )
+
+        self.play(
+            Write(arcsin_value),
+            Write(arcsin_label)
+        )
+        self.play(
+            xvalue.animate.increment_value(2),
+            Create(inv_sin_graph),
+            rate_func = linear,
+            run_time = 3
+        )
+
+        self.play(
+            ReplacementTransform(inv_sin_graph, identity_func),
+            ReplacementTransform(sin_graph, identity_func),
+            run_time = 3
+        )
+
+        identity_func_label = MathTex("f(f^{-1}(x)) = x", font_size = 22).next_to(inv_sin_graph, UR)
+
+        self.play(Write(identity_func_label))
 
         self.wait()
+
+        self.play(
+            FadeOut(identity_func),
+            FadeOut(identity_func_label),
+            FadeOut(arcsin_value),
+            FadeOut(arcsin_label),
+            FadeOut(sin_m1_domain_tex),
+            FadeOut(sin_m1_idomain_tex),
+            FadeOut(sin_m1_tex)
+        )
+
+        self.wait()
+
+        # funcion coseno
+        xvalue.set_value(-1)
+
+        arccos_value = always_redraw(
+            lambda : DecimalNumber(include_sign = True, font_size = 24)
+            .set_value(arccos(xvalue.get_value()))
+            .to_edge(UR)
+        )
+        arcsin_label = MathTex("\\cos^{-1} x = ", font_size = 24).next_to(arccos_value, LEFT)
+
+        cos_graph = inv_trigs_axes.plot(
+            lambda x : cos(x),
+            [-6, 6],
+            color = RED
+        )
+
+        inv_cos_graph = inv_trigs_axes.plot(
+            lambda x : PI/2 + (PI/3) * sin(PI/3 * x),
+            [-PI/2 + 0.047, PI/2 - 0.047]
+        ).set_color(color = [RED, GOLD_A])
+        inv_cos_graph.rotate(-PI/2)
+
+        cos_m1_tex = MathTex(
+            "\cos x = \\sin (\\frac{\pi}{2} - x) \implies \
+             \cos^{-1} x = \\frac{\pi}{2} - \sin^{-1} x",
+             font_size = 22
+        ).to_edge(UL).shift(RIGHT*0.7).set_color(color = [RED, GOLD_A])
+
+        cos_m1_domain_tex = MathTex(
+            "D_{ \cos^{-1} x } = \{ x \in \mathbb{R} \; | -1 \leqslant x \leqslant 1 \}",
+            font_size = 22
+        ).to_edge(UL).next_to(cos_m1_tex, DOWN).set_color(color = [RED, GOLD_A])
+        cos_m1_idomain_tex = MathTex(
+            "I_{ \cos^{-1} x } = \{ y \in \mathbb{R} \; | \; 0 \leqslant y \leqslant \pi \}",
+            font_size = 22
+        ).next_to(cos_m1_domain_tex, DOWN).set_color(color = [RED, GOLD_A])
+
+        self.play(
+            Write(cos_m1_tex),
+            Write(cos_m1_domain_tex),
+            Write(cos_m1_idomain_tex),
+        )
+
+        self.play(Create(cos_graph))
+        
+        self.play(
+            Write(arccos_value),
+            Write(arcsin_label)
+        )
+
+        self.play(
+            xvalue.animate.increment_value(2),
+            Create(inv_cos_graph),
+            rate_func = linear,
+            run_time = 3
+        )
+
+        self.wait()
+
+        # tangente y cotangente
+
+        self.play(
+            FadeOut(cos_graph),
+            FadeOut(inv_cos_graph),
+            FadeOut(arccos_value),
+            FadeOut(arcsin_label)
+        )
+
+        tan_m1_tex = MathTex(
+            "\\tan^{-1} = \\tan y",
+            font_size = 22
+        ).to_edge(UL).shift(RIGHT).set_color(color = [YELLOW_B, PURPLE])
+
+        tan_m1_domain_tex = MathTex(
+            "D_{\\tan^{-1} x } = { \mathbb{R} }",
+            font_size = 22
+        ).next_to(tan_m1_tex, DOWN).set_color(color = [YELLOW_B, PURPLE])
+        tan_m1_idomain_tex = MathTex(
+            "I_{\\tan^{-1} x} = \{ y \in \mathbb{R} \; | -\\frac{\pi}{2} \leqslant y \leqslant \\frac{\pi}{2} \}",
+            font_size = 22
+        ).next_to(tan_m1_domain_tex, DOWN).set_color(color = [YELLOW_B, PURPLE])
+
+        inv_tan_graph = inv_trigs_axes.plot(
+            lambda x : arctan(x),
+            [-6, 6],
+        ).set_color(color = [YELLOW_B, PURPLE])
+
+        self.play(
+            ReplacementTransform(cos_m1_tex, tan_m1_tex),
+            ReplacementTransform(cos_m1_domain_tex, tan_m1_domain_tex),
+            ReplacementTransform(cos_m1_idomain_tex, tan_m1_idomain_tex),
+        )
+
+        self.play(Create(inv_tan_graph), run_time = 3)
+
+        cot_m1_tex = MathTex(
+            "\cot^{-1} x = \\frac{\pi}{2} - \\tan^{-1} x",
+            font_size = 22
+        ).to_edge(UL).shift(RIGHT + DOWN*1.5).set_color(color = [GREEN, MAROON])
+
+        cot_m1_domain_tex = MathTex(
+            "D_{\cot^{-1} x } = \mathbb{R}",
+            font_size = 22
+        ).next_to(cot_m1_tex, DOWN).set_color(color = [GREEN, MAROON])
+
+        cot_m1_idomain_tex = MathTex(
+            "I_{\cot^{-1} x } = \{ y \in \mathbb{R} \; | \; 0 \leqslant y \leqslant \pi \}",
+            font_size = 22
+        ).next_to(cot_m1_domain_tex, DOWN).set_color(color = [GREEN, MAROON])
+
+        inv_cot_graph = inv_trigs_axes.plot(
+            lambda x : PI/2 - arctan(x),
+            [-6, 6],
+        ).set_color(color = [GREEN, MAROON])
+
+        self.play(
+            ReplacementTransform(tan_m1_tex, cot_m1_tex),
+            ReplacementTransform(tan_m1_domain_tex, cot_m1_domain_tex),
+            ReplacementTransform(tan_m1_idomain_tex, cot_m1_idomain_tex),
+        )
+
+        self.play(Create(inv_cot_graph), run_time = 3)
+
+        self.wait()
+
+        # secante y cosecante
+
+        self.play(
+            FadeOut(inv_cot_graph),
+            FadeOut(inv_tan_graph)
+        )
+
+        sec_m1_tex0 = MathTex(
+            "\sec^{-1} x  = \sec y \implies \\\\ \
+             x = \\frac{1}{\cos y} \implies \\\\ \
+             \cos y = \\frac{1}{x} \implies \\\\ \
+             y = \cos^{-1}(\\frac{1}{x})",
+             font_size = 22
+        ).to_edge(UL).shift(RIGHT).set_color(color = [PURPLE_C, TEAL])
+        sec_m1_tex1 = MathTex(
+            "\sec^{-1} x  = \sec y",
+            font_size = 22
+        ).to_edge(UL).shift(RIGHT).set_color(color = [PURPLE_C, TEAL])
+
+        sec_m1_domain_tex = MathTex(
+            "D_{\sec^{-1} x } = \mathbb{R} \setminus \{ x \in \mathbb{R} \; | -1 \leq x \leq 1 \}",
+            font_size = 22
+        ).next_to(sec_m1_tex1, DOWN).set_color(color = [PURPLE_C, TEAL])
+
+        sec_m1_idomain_tex = MathTex(
+            "I_{\sec^{-1} x } = \{ y \in \mathbb{R} \; | \; 0 \leqslant y \leqslant \pi \}",
+            font_size = 22
+        ).next_to(sec_m1_domain_tex, DOWN).set_color(color = [PURPLE_C, TEAL])
+
+        inv_sec_graph_left = inv_trigs_axes.plot(
+            lambda x : arccos(1/x),
+            [-6, -1]
+        ).set_color(color = [PURPLE_C, TEAL])
+        inv_sec_graph_right = inv_trigs_axes.plot(
+            lambda x : acos(1/x),
+            [1, 6]
+        ).set_color(color = [PURPLE_C, TEAL])
+
+        self.play(
+            ReplacementTransform(cot_m1_tex, sec_m1_tex0),
+            FadeOut(cot_m1_domain_tex),
+            FadeOut(cot_m1_idomain_tex)
+        )
+        self.wait(2)
+        self.play(
+            ReplacementTransform(sec_m1_tex0, sec_m1_tex1)
+        )
+        self.play(
+            Write(sec_m1_domain_tex),
+            Write(sec_m1_idomain_tex)
+        )
+
+        self.play(Create(inv_sec_graph_left))
+        self.play(Create(inv_sec_graph_right))
+
+        self.wait()
+        # self.play(
+        #     FadeOut(inv_sec_graph_left),
+        #     FadeOut(inv_sec_graph_right)
+        # )
+
+        csc_m1_tex = MathTex(
+            "\sec^{-1} = \sec y \implies \csc{^1} = \\frac{\pi}{2} - \sec^{1} x",
+            font_size = 22
+        ).to_edge(UL).shift(RIGHT).set_color(color = [ORANGE, LIGHT_PINK])
+
+        csc_m1_domain_tex = MathTex(
+            "D_{\csc^{-1} x } = R \setminus \{ x \in \mathbb{R} \; | -1 \leq x \leq 1 \}",
+            font_size = 22
+        ).next_to(csc_m1_tex, DOWN).set_color(color = [ORANGE, LIGHT_PINK])
+
+        csc_m1_idomain_tex = MathTex(
+            "I_{\csc^{-1} x } = \{ y \in \mathbb{R} \; | -\\frac{\pi}{2} \leqslant y \leqslant \\frac{\pi}{2} \}",
+            font_size = 22
+        ).next_to(csc_m1_domain_tex, DOWN).set_color(color = [ORANGE, LIGHT_PINK])
+
+        inv_csc_graph_left = inv_trigs_axes.plot(
+            lambda x : PI/2 - acos(1/x),
+            [-6, -1]
+        ).set_color(color = [LIGHT_PINK, ORANGE])
+        inv_csc_graph_right = inv_trigs_axes.plot(
+            lambda x : PI/2 - acos(1/x),
+            [1, 6]
+        ).set_color(color = [ORANGE, LIGHT_PINK])
+
+        self.play(
+            ReplacementTransform(sec_m1_tex1, csc_m1_tex),
+            ReplacementTransform(sec_m1_domain_tex, csc_m1_domain_tex),
+            ReplacementTransform(sec_m1_idomain_tex, csc_m1_idomain_tex)
+        )
+
+        self.play(Create(inv_csc_graph_left)),
+        self.play(Create(inv_csc_graph_right))
+
+        self.wait()
+
+        # todas las inveras juntas
+
+        self.play(
+            FadeOut(csc_m1_tex),
+            FadeOut(csc_m1_domain_tex),
+            FadeOut(csc_m1_idomain_tex),
+        )
+
+        inv_sin_graph = inv_trigs_axes.plot(
+            lambda x : (PI/3) * sin(PI/3 * x),
+            [-PI/2 + 0.047, PI/2 - 0.047]
+        ).set_color(color = [TEAL_B, GREEN_A])
+        inv_sin_graph.rotate(PI, axis = UP)
+        inv_sin_graph.rotate(-PI/2)
+
+        self.play(Create(inv_cot_graph))
+        self.play(Create(inv_tan_graph))
+        self.play(Create(inv_cos_graph))
+        self.play(Create(inv_sin_graph))
+
+        self.wait(4)
+
+        self.play(
+            FadeOut(inv_cot_graph),
+            FadeOut(inv_tan_graph),
+            FadeOut(inv_cos_graph),
+            FadeOut(inv_sin_graph),
+            FadeOut(inv_sec_graph_left),
+            FadeOut(inv_sec_graph_right),
+            FadeOut(inv_csc_graph_left),
+            FadeOut(inv_csc_graph_right),
+            FadeOut(inv_trigs_axes),
+            FadeOut(inv_trigs_label_x),
+            FadeOut(inv_trigs_label_y),
+            FadeOut(inv_trigs_plane),
+        )
+
+        self.wait(2)
+
+
