@@ -1,19 +1,20 @@
 from manim import *
-import math
+from numpy import sin
 
 class Functions(Scene):
     def construct(self):
         ax = Axes(
-            x_range=[-10, 10, PI/2],
-            y_range=[-4, 4],
-            x_length=12,
-            tips=False,
+            x_range = [-5*PI, 5*PI, PI/2],
+            y_range = [-2, 2, 1],
+            x_length = 9,
+            y_length = 1.3,
+            tips = False,
         )
 
         ax_labels = NumberLine(
-            x_range=[-10, 10, PI/2],
-            length=12,
-            include_numbers=False
+            x_range = [-10, 10, PI/2],
+            length = 12,
+            include_numbers = False
         )
 
         ax_labels.add_labels({
@@ -32,24 +33,26 @@ class Functions(Scene):
         })
 
         graph = ax.plot(
-            lambda x : (4 * math.sin(x)) / PI\
-                + (4 * math.sin(3 * x)) / (3 * PI)\
-                + (4 * math.sin(5 * x)) / (5 * PI)\
-                + (4 * math.sin(7 * x)) / (7 * PI)\
-                + (4 * math.sin(9 * x)) / (9 * PI)\
-                + (4 * math.sin(11 * x)) / (11 * PI)\
-                + (4 * math.sin(13 * x)) / (13 * PI)\
-                + (4 * math.sin(15 * x)) / (15 * PI)\
-                + (4 * math.sin(17 * x)) / (17 * PI)\
-                + (4 * math.sin(19 * x)) / (19 * PI)\
-                + (4 * math.sin(21 * x)) / (21 * PI)\
-                + (4 * math.sin(23 * x)) / (23 * PI)\
-                + (4 * math.sin(25 * x)) / (25 * PI)\
-                + (4 * math.sin(27 * x)) / (27 * PI),
-            x_range=[-10, 10],
-            color=YELLOW_B
-        )
+            lambda x : (4 * sin(x)) / PI\
+                + (4 * sin(3 * x)) / (3 * PI)\
+                + (4 * sin(5 * x)) / (5 * PI)\
+                + (4 * sin(7 * x)) / (7 * PI)\
+                + (4 * sin(9 * x)) / (9 * PI)\
+                + (4 * sin(11 * x)) / (11 * PI)\
+                + (4 * sin(13 * x)) / (13 * PI)\
+                + (4 * sin(15 * x)) / (15 * PI)\
+                + (4 * sin(17 * x)) / (17 * PI)\
+                + (4 * sin(19 * x)) / (19 * PI)\
+                + (4 * sin(21 * x)) / (21 * PI)\
+                + (4 * sin(23 * x)) / (23 * PI)\
+                + (4 * sin(25 * x)) / (25 * PI)\
+                + (4 * sin(27 * x)) / (27 * PI),
+            x_range = [-4*PI, 4*PI],
+            color=YELLOW_B,
+            use_vectorized = True,
+        ).init_points()
 
+        '''
         sin_graphs = VGroup()
         for n in range(1,27,2):
             n_graph = ax.plot(
@@ -58,21 +61,42 @@ class Functions(Scene):
                 color=GREEN_B
             )
             sin_graphs.add(n_graph)
-
+        
+        '''
+        '''
         func_text = MathTex(
                 "\phi(x) = \
                 \\frac{4 \sin x}{\pi} + \\frac{4 \sin 3x}{3 \pi} + \
                 \\frac{4 \sin 5x}{5 \pi} + \\frac{4 \sin 7x}{7 \pi} + \
                 \\frac{4 \sin 7x}{7 \pi} + ...",
-                color=YELLOW_B
+                color=YELLOW_B,
+                font_size = 24
             )
         func_text.to_edge(UL)
+        '''
 
-        self.play(Write(ax), Write(ax_labels))
+        func_text = MathTex(
+            "f(x) = \sum_{n=0}^{13} \\frac{4 \cdot \sin ((2n + 1) \cdot x) }{ (2n + 1) \cdot \pi} \
+                ; \{ x \in \\mathbb{R} | -4 \pi \leqslant x \leqslant 4 \pi \}",
+            color = YELLOW_B,
+            font_size = 20
+        )
+        func_text.to_edge(UP)
+
+        self.play(Write(ax))
         self.wait()
-        self.play(FadeOut(ax_labels))
         self.play(Write(func_text))
         self.play(Create(graph), run_time=4, rate_func=smooth)
-        self.wait(2)
-        self.play(Transform(graph, sin_graphs), run_time=2)
+        self.play(
+            graph.animate.shift(UP*2.1),
+            ax.animate.shift(UP*2.1)
+        )
+
+        group = VGroup(
+            func_text,
+            graph,
+            ax
+        )
+
+        self.play(group.animate.shift(DOWN*2.45))
         self.wait(2)

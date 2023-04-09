@@ -53,6 +53,9 @@ class Formulas(Scene):
         self.play(Write(sinm1_idomain))
         self.wait()
 
+        self.clear()
+        self.wait()
+
         
 
 class InverseTrigs(Scene):
@@ -122,11 +125,19 @@ class InvUnitCircle(Scene):
 
         graph_axes = Axes(
             x_range = [-2*PI, 2*PI, PI/2],
-            y_range = [-1.5, 1.5, 1],
+            y_range = [-PI, PI, 1],
             x_length = 7,
-            y_length = 4,
+            y_length = 5,
             tips = False
         )
+
+        graph_axes_2 = Axes(
+            x_range = [-2*PI, 2*PI, 1],
+            y_range = [-PI, PI, PI/2],
+            x_length = 7,
+            y_length = 5,
+            tips = False
+        ).shift(RIGHT*3)
         
         # circulo unitario
         unit_circle = Circle(radius=1, color=WHITE)
@@ -249,4 +260,111 @@ class InvUnitCircle(Scene):
         
         self.wait()
 
+        self.play(
+            FadeOut(cos_line),
+            FadeOut(circunference),
+        )
+
+        '''
+        Dominio de las funciones inversas y el circulo unitario
+        '''
+        xvt = ValueTracker(0)
+
+        sin_arc = always_redraw( lambda : Arc(
+            radius = 1,
+            start_angle = -PI/2,
+            angle = xvt.get_value(),
+            arc_center = ORIGIN,
+            color = ORANGE,
+        ).shift(LEFT*4))
+
+        sin_m1_tex = Tex(
+            "$f(x) = \sin x$ \
+            $\implies f^{-1}(x) = \sin y$",
+            font_size = 22
+        ).to_edge(UL).shift(RIGHT*0.7)
+
+        sin_m1_domain_tex = MathTex(
+            "D_{f^{-1}(x)} = \{ x \in \mathbb{R} \; | -1 \leqslant x \leqslant 1 \}",
+            font_size = 22
+        ).to_edge(UL).next_to(sin_m1_tex, DOWN)
+        sin_m1_idomain_tex = MathTex(
+            "I_{f^{-1}(x)} = \{ y \in \mathbb{R} \; | -\\frac{\pi}{2} \leqslant y \leqslant \\frac{\pi}{2} \}",
+            font_size = 22,
+            color = ORANGE
+        ).next_to(sin_m1_domain_tex, DOWN)
+
+        self.play(
+            ReplacementTransform(graph_axes, graph_axes_2),
+            FadeIn(sin_arc),
+            Write(sin_m1_tex),
+            Write(sin_m1_domain_tex)
+        )
+
+        self.play(theta.animate.increment_value(-PI/2), run_time = 1)
+        self.play(
+            xvt.animate.increment_value(PI),
+            theta.animate.increment_value(PI),
+            sin_m1_domain_tex.animate(run_time = 0.3).set_color(BLUE),
+            run_time = 3
+        )
+
+        y_line = graph_axes_2.plot(
+            lambda x : 0,
+            [(-PI/2)*1.44, (PI/2)*1.44],
+            color = BLUE
+        ).rotate(PI/2).set_color(color = [ORANGE, RED_A])
         
+        x_line = graph_axes_2.plot(
+            lambda x : 0,
+            [-1, 1],
+            color = BLUE_D
+        )
+
+        self.play(
+            ReplacementTransform(sin_arc, y_line),
+            ReplacementTransform(sin_line, x_line),
+            run_time = 2
+        )
+
+        self.play(xvt.animate.increment_value(-PI))
+
+        pi_o2 = MathTex("\\frac{\pi}{2}", font_size = 20).next_to(y_line, UL).shift(DOWN*0.5)
+        mpi_o2 = MathTex("-\\frac{\pi}{2}", font_size = 20).next_to(y_line, DL).shift(UP*0.5)
+
+        one = MathTex("1", font_size = 20).next_to(x_line, UL).shift(RIGHT*0.3)
+        m_one = MathTex("-1", font_size = 20).next_to(x_line, UR).shift(LEFT*0.5)
+
+        self.play(
+            Write(pi_o2),
+            Write(mpi_o2),
+            Write(one),
+            Write(m_one),
+            Write(sin_m1_idomain_tex)
+        )
+
+        self.wait()
+
+        self.play(
+            FadeOut(pi_o2),
+            FadeOut(mpi_o2),
+            FadeOut(one),
+            FadeOut(m_one),
+            FadeOut(y_line),
+            FadeOut(x_line),
+            FadeOut(graph_axes_2),
+            FadeOut(unit_axes),
+            FadeOut(unit_circle),
+            FadeOut(radius),
+        )
+        
+        '''
+        Funciones trigonometricas inversas
+        '''
+
+
+        arcsin_value = lambda x : arcsin(x)
+        
+        
+
+        self.wait()
